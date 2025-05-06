@@ -88,26 +88,36 @@ if is_real_time(event):
     firehose.put_record(DeliveryStreamName='real-time-events')
 else:
     glue.start_job_run(JobName='batch-processing')
-
+```
 ## 7. Education & Flexibility
-Student/User Empowerment:
-Provide a sandbox environment in Athena for learning and experimentation:
-aws athena create-work-group --name student_sandbox
+**Student/User Empowerment:**
+- Provide a sandbox environment in Athena for learning and experimentation:
+- aws athena create-work-group --name student_sandbox
+
+### Storage Layers
+
+| Layer     | Format    | Purpose      | Retention  |
+|-----------|-----------|--------------|------------|
+| Raw       | CSV/JSON  | Audit trail  | 30 days    |
+| Processed | Parquet   | Analytics    | 1 year     |
+| Aggregated| Redis     | Leaderboard  | 7 days     |
 
 ## 8. Practicalities
-Cost Estimates:
-S3 Storage: ~0.03 USD/GB per month for raw/processed data.
-Athena Queries: 5 USD per TB scanned for queries.
-Lambda Costs: Based on execution time, with the free tier covering low-volume processing.
-Work Estimation:
-Implementation Time: Approximately 3-4 weeks for initial pipeline setup and integration.
-Testing/Optimization: 1-2 weeks for final optimization and cost checks.
+**Cost Estimates:**
+- S3 Storage: ~0.03 USD/GB per month for raw/processed data.
+- Athena Queries: 5 USD per TB scanned for queries.
+- Lambda Costs: Based on execution time, with the free tier covering low-volume processing.
+**Work Estimation:**
+- Implementation Time: Approximately 3-4 weeks for initial pipeline setup and integration.
+- Testing/Optimization: 1-2 weeks for final optimization and cost checks.
  
 ## 9. Privacy and Security
-Sensitive Data: No sensitive personal or financial data is handled by the pipeline.
-Security Approval: New technologies (Glue, Athena, Lambda) introduced; review with the security team is recommended if required.
+- Sensitive Data: No sensitive personal or financial data is handled by the pipeline.
+- Security Approval: New technologies (Glue, Athena, Lambda) introduced; review with the security team is recommended if required.
 
 ### 10. Future Enhancements
-Real-time Data: Integration of AWS Kinesis for real-time data streaming, if needed.
-Machine Learning: Post-MVP integration with SageMaker Autopilot for predictive analytics.
-
+- Real-time Data: Integration of AWS Kinesis for real-time data streaming, if needed.
+- Machine Learning: Post-MVP integration with SageMaker Autopilot for predictive analytics.
+  
+### Author: Kris Liu
+**Email:** kris.shuyi.l@gmail.com
