@@ -1,7 +1,6 @@
 PEAK FITNESS - TECHNICAL DESIGN DOCUMENT
 
 1. Scope
-In Scope
 
 ✅ End-to-end data pipeline (Lambda/Glue/Athena)
 ✅ Streamlit dashboard with leaderboard
