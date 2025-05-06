@@ -2,7 +2,6 @@ PEAK FITNESS - TECHNICAL DESIGN DOCUMENT
 
 1. Scope
 In Scope:
-
 End-to-end Data Pipeline: Design and implement a cloud-based data pipeline using Lambda, Glue, and Athena for class signups, transactions, and engagement data.
 
 Streamlit Dashboard: Build a leaderboard and interactive dashboard for customer engagement and retention metrics.
@@ -20,6 +19,9 @@ Database Creation (Athena): Set up Athena for querying and analytics on the tran
 Education Flexibility: Provide ETL templates and a sandbox Athena database for future student/user empowerment.
 
 CAP Theorem Balancing: Ensure data availability and consistency while managing partition tolerance for the system.
+
+Out of Scope (Future Handling):
+Real-time Engagement: Add AWS Kinesis for real-time data streaming if engagement grows.
 
 Machine Learning: Integrate SageMaker Autopilot for predictive analytics (e.g., churn prediction) after MVP.
 
