@@ -1,14 +1,15 @@
 PEAK FITNESS - TECHNICAL DESIGN DOCUMENT
 
 1. Scope
-
 In Scope
+
 ✅ End-to-end data pipeline (Lambda/Glue/Athena)
 ✅ Streamlit dashboard with leaderboard
-✅ HubSpot CRM sync for churned users and retention implementation
-✅ Marketing Email campaigns
-
+✅ HubSpot CRM sync for churned users
+✅ Email campaigns (SES)
+✅ Free Tier cost optimization
 Out of Scope
+
 ⛔ Real-time streaming (Kinesis)
 ⛔ Multi-cloud deployment
 ⛔ Advanced ML model training
@@ -20,8 +21,7 @@ Future Handling:
     ML: SageMaker Autopilot after MVP
 
 2. Technical Architecture Diagram
-"C:\Users\Kris OH\Documents\AWS Cloud Essential Course\Project\Design Document\deepseek_mermaid_20250506_455c7e.png"
-```mermaid
+
 flowchart TD
     A[CSV/JSON Files] -->|Lambda| B[S3 Raw Zone]
     B --> C{Glue ETL Job}
@@ -33,7 +33,6 @@ flowchart TD
     F --> I[Leaderboard Redis]
     G --> J[Member Retention Emails]
     H --> K[Location-Based Campaigns]
-```
     
 
 Data Flow
