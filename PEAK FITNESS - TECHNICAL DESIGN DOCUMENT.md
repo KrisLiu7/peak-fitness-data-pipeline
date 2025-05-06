@@ -1,26 +1,30 @@
 PEAK FITNESS - TECHNICAL DESIGN DOCUMENT
 
 1. Scope
-In Scope
+In Scope:
 
-✅ End-to-end data pipeline (Lambda/Glue/Athena)
-✅ Streamlit dashboard with leaderboard
-✅ HubSpot CRM sync for churned users
-✅ Email campaigns (SES)
-✅ Free Tier cost optimization
-Out of Scope
+End-to-end Data Pipeline: Design and implement a cloud-based data pipeline using Lambda, Glue, and Athena for class signups, transactions, and engagement data.
 
-⛔ Real-time streaming (Kinesis)
-⛔ Multi-cloud deployment
-⛔ Advanced ML model training
+Streamlit Dashboard: Build a leaderboard and interactive dashboard for customer engagement and retention metrics.
 
-Future Handling:
+HubSpot CRM Sync: Implement integration for churn and retention tracking by syncing data to HubSpot CRM.
 
-    Real-time: Add Kinesis if engagement grows
+Marketing Email Campaigns: Implement member retention and lifecycle email campaigns.
 
-    ML: SageMaker Autopilot after MVP
+Free Tier Cost Optimization: Minimize AWS costs by utilizing free-tier resources where possible.
+
+ETL Development: Convert raw CSV/JSON files into Parquet format for efficient analytics.
+
+Database Creation (Athena): Set up Athena for querying and analytics on the transformed data.
+
+Education Flexibility: Provide ETL templates and a sandbox Athena database for future student/user empowerment.
+
+CAP Theorem Balancing: Ensure data availability and consistency while managing partition tolerance for the system.
+
+Machine Learning: Integrate SageMaker Autopilot for predictive analytics (e.g., churn prediction) after MVP.
 
 2. Technical Architecture Diagram
+The following diagram and steps explain the data flow from raw ingestion to actionable insights:
 
 flowchart TD
     A[CSV/JSON Files] -->|Lambda| B[S3 Raw Zone]
@@ -35,73 +39,106 @@ flowchart TD
     H --> K[Location-Based Campaigns]
     
 
-Data Flow
+Data Flow:
 
-    Ingest: Lambda converts CSVs → Parquet
+Ingest: Lambda converts CSV/JSON files into Parquet format for efficient storage.
 
-    Process: Glue Spark cleans/partitions data
+Process: Glue Spark jobs clean and partition the data for analysis.
 
-    Serve: Athena queries power Streamlit/HubSpot
+Serve: Athena queries power the Streamlit dashboard and HubSpot CRM integration.
 
-    Act: Emails sent via SES
+Act: Emails are triggered via SES to engage users based on marketing campaigns.
 
 3. Proposed Tech Stack
-Tool	Use Case	Reason
-AWS Lambda	ETL, CRM Sync	Free Tier, event-driven
-Glue Spark	Parquet conversion	Resume-worthy, OLAP-ready
-Athena	Analytics	Pay-per-query, no infra
-Streamlit	Dashboard	Python-native, embeddable
+| Tool           | Use Case           | Reason                                            |
+| -------------- | ------------------ | ------------------------------------------------- |
+| **AWS Lambda** | ETL, CRM Sync      | Free Tier, event-driven, cost-efficient           |
+| **Glue Spark** | Parquet Conversion | OLAP-ready, scalable, managed service             |
+| **Athena**     | Analytics          | Pay-per-query, serverless, no infrastructure need |
+| **Streamlit**  | Dashboard          | Python-native, embeddable, fast prototyping       |
+
+
 4. Design Decisions & Tradeoffs
-Decision	Pros	Cons
-Lambda over Kinesis	$0 cost at low volume	No real-time
-Athena over Redshift	No cluster management	Slower for joins
-Glue over EMR	Fully managed	Limited customization
+| Decision                 | Pros                           | Cons                                |
+| ------------------------ | ------------------------------ | ----------------------------------- |
+| **Lambda over Kinesis**  | No cost at low volume          | No real-time streaming capabilities |
+| **Athena over Redshift** | No cluster management required | Slower for complex joins            |
+| **Glue over EMR**        | Fully managed service          | Limited customization               |
+
+
 5. Data Management
-Integration Pattern
+Data Integration Pattern:
 
-    Type: Batch (daily)
+Type: Batch (daily)
 
-    Direction: Outbound (Athena → HubSpot)
+Direction: Outbound (Athena → HubSpot CRM)
 
-    Tech: Lambda pulls Athena → HubSpot API
+Tech: Lambda to pull data from Athena and push to HubSpot API.
 
-Storage Layers
-Layer	Format	Purpose	Retention
-Raw	CSV/JSON	Audit trail	30 days
-Processed	Parquet	Analytics	1 year
-Aggregated	Redis	Leaderboard	7 days
-Data Model (Star Schema)
+Data Processing Pattern:
 
-FACT_ATTENDANCE (user_id, class_id, dt)  
-DIM_USERS (user_id, location, join_date)  
-DIM_CLASSES (class_id, instructor, time)  
+Data is loaded into Athena for analytics queries and S3 for storage.
 
-6. Practicalities
-Cost Estimates
-Service	Monthly Cost
-AWS Glue	$1.20
-Athena	$0.50
-HubSpot	$0.00
-Timeline
-Phase	Duration
-ETL Build	3 days
-Dashboard	2 days
-CRM Sync	1 day
-Security
+Athena serves as the data warehouse for querying and reporting.
 
-    PII Handling: Email/location only
+Data Layers & Storage:
 
-    Approvals: None required (Free Tier only)
+Raw Layer: Stored in CSV/JSON format in S3 for audit trail and ingestion (Retention: 30 days).
 
-7. Current Status
-diff
+Processed Layer: Transformed data in Parquet format for analytics (Retention: 1 year).
 
-+ COMPLETED:
-- Lambda ETL
-- Athena setup
-- Sample analyses
+Aggregated Layer: Redis for leaderboard caching (Retention: 7 days).
 
-! NEXT:
-1. Streamlit leaderboard (code ready)
-2. HubSpot sync (awaiting API key)
-3. SES template approval
+Data Model:
+
+Fact Table: FACT_ATTENDANCE (user_id, class_id, dt)
+
+Dimension Tables:
+
+DIM_USERS (user_id, location, join_date)
+
+DIM_CLASSES (class_id, instructor, time)
+
+6. CAP Theorem Balancing
+| Requirement             | Implementation     | Trade-off                           |
+| ----------------------- | ------------------ | ----------------------------------- |
+| **Consistency**         | Glue Job bookmarks | 24h latency in analytics            |
+| **Availability**        | S3 + Athena        | Eventual consistency in queries     |
+| **Partition Tolerance** | Multi-AZ S3        | Higher storage costs for redundancy |
+
+Event vs Historical Data Flow:
+if is_real_time(event):
+    firehose.put_record(DeliveryStreamName='real-time-events')
+else:
+    glue.start_job_run(JobName='batch-processing')
+
+7. Education & Flexibility
+Student/User Empowerment:
+Provide a sandbox environment in Athena for learning and experimentation:
+aws athena create-work-group --name student_sandbox
+
+8. Practicalities
+Cost Estimates:
+
+S3 Storage: ~0.03 USD/GB per month for raw/processed data.
+
+Athena Queries: 5 USD per TB scanned for queries.
+
+Lambda Costs: Based on execution time, with the free tier covering low-volume processing.
+
+Work Estimation:
+
+Implementation Time: Approximately 3-4 weeks for initial pipeline setup and integration.
+
+Testing/Optimization: 1-2 weeks for final optimization and cost checks.
+ 
+9. Privacy and Security
+Sensitive Data: No sensitive personal or financial data is handled by the pipeline.
+
+Security Approval: New technologies (Glue, Athena, Lambda) introduced; review with the security team is recommended if required.
+
+10. Future Enhancements
+Real-time Data: Integration of AWS Kinesis for real-time data streaming, if needed.
+
+Machine Learning: Post-MVP integration with SageMaker Autopilot for predictive analytics.
+
