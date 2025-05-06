@@ -17,11 +17,11 @@
 ## 2. Technical Architecture Diagram
 The following diagram and steps explain the data flow from raw ingestion to actionable insights:
 
-
+```mermaid
 flowchart TD
     A[CSV/JSON Files] -->|Lambda| B[S3 Raw Zone]
     B --> C{Glue ETL Job}
-    C -->|Valid| D[S3 Processed Zone\nParquet]
+    C -->|Valid| D[S3 Processed Zone<br>Parquet]
     C -->|Invalid| E[S3 Quarantine]
     D --> F[Athena Catalog]
     F --> G[Streamlit Dashboard]
@@ -29,8 +29,8 @@ flowchart TD
     F --> I[Leaderboard Redis]
     G --> J[Member Retention Emails]
     H --> K[Location-Based Campaigns]
-    
-
+```
+   
 
 **Data Flow:**
 
