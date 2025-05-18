@@ -1,0 +1,31 @@
+
+#Athena SQL to create your fact_attendance table
+CREATE EXTERNAL TABLE IF NOT EXISTS peak_fitness.fact_attendance (
+  session_id STRING,
+  location_id STRING,
+  class_name STRING,
+  instructor_name STRING,
+  attendees ARRAY<STRUCT<user_id:STRING>>, 
+  attendance_count INT
+)
+PARTITIONED BY (
+  class_datetime DATE
+)
+STORED AS PARQUET
+LOCATION 's3://peak-fitness-kris-processed/fact_attendance/'
+TBLPROPERTIES (
+  'parquet.compress'='SNAPPY'
+);
+
+#Load the partitions,tells Athena to discover and register the partition folders you uploaded (e.g., class_datetime=2023-01-01/).
+MSCK REPAIR TABLE peak_fitness.fact_attendance;
+
+#Test with a basic query
+SELECT * FROM peak_fitness.fact_attendance
+LIMIT 10;
+
+#try checking partition filters work
+SELECT class_name, attendance_count
+FROM peak_fitness.fact_attendance
+WHERE class_datetime = DATE '2023-01-01';
+

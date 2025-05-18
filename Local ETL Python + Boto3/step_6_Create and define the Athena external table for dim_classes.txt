@@ -1,0 +1,12 @@
+#No partitions for this table compare to others
+CREATE EXTERNAL TABLE IF NOT EXISTS peak_fitness.dim_classes (
+  session_id STRING,
+  class_name STRING,
+  instructor_name STRING,
+  location_id STRING,
+  start_time TIMESTAMP,
+  end_time TIMESTAMP
+)
+STORED AS PARQUET
+LOCATION 's3://peak-fitness-kris-processed/dim_classes/'
+TBLPROPERTIES ("parquet.compress"="SNAPPY");

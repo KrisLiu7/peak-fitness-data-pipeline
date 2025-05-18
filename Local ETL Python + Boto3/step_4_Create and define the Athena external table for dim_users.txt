@@ -1,0 +1,20 @@
+#define dim_users table in Athena, matching the Parquet schema just uploaded
+CREATE EXTERNAL TABLE IF NOT EXISTS peak_fitness.dim_users (
+  user_id STRING,
+  first_name STRING,
+  last_name STRING,
+  gender STRING,
+  email STRING,
+  phone_number STRING,
+  date_of_birth TIMESTAMP,
+  city STRING,
+  preferred_location_id STRING,
+  created_at TIMESTAMP
+)
+STORED AS PARQUET
+LOCATION 's3://peak-fitness-kris-processed/dim_users/'
+TBLPROPERTIES ("parquet.compress"="SNAPPY");
+
+# Test and confirm it works
+SELECT * FROM peak_fitness.dim_users
+LIMIT 10;
