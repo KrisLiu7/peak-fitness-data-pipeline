@@ -1,0 +1,6 @@
+streamlit
+pandas
+pyathena
+matplotlib
+plotly
+boto3
