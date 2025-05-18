@@ -36,3 +36,4 @@ This project is built to be modular and easily extensible for future developers,
 - Access the same S3 Parquet tables directly using:
   ```python
   df = spark.read.option("fs.s3a.requester.pays.enabled", "true").parquet("s3a://your-bucket/...")
+###
