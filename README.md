@@ -1,2 +1,12 @@
-# peak-fitness-data-pipeline
-This repository contains the design and implementation of a cloud-based data pipeline for Peak Fitness, aimed at enhancing customer engagement and retention through data-driven marketing strategies. The project utilizes AWS services (Lambda, Glue, Athena) to build scalable ETL workflows, store customer and class data, and enable predictive analytics for churn prediction and class popularity. The pipeline integrates with HubSpot CRM and includes a Streamlit dashboard to visualize key metrics such as member retention and app leaderboards.
+# Peak Fitness Data Pipeline  
+**Goal**: Reduce member churn via AWS analytics.  
+
+## Key Features  
+- 🚀 Serverless ETL (Glue, Lambda)  
+- 📊 Athena + Streamlit dashboard  
+- ✉️ Automated retention emails  
+
+## Quick Start  
+1. Deploy Glue jobs from `/etl`.  
+2. Query data in Athena (see `docs/TDD.pdf`).
+
