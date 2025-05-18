@@ -1,0 +1,67 @@
+#9.1.3 — dim_users
+CREATE EXTERNAL TABLE IF NOT EXISTS peak_fitness.dim_users (
+  user_id STRING,
+  first_name STRING,
+  last_name STRING,
+  email STRING,
+  phone_number STRING,
+  date_of_birth TIMESTAMP,
+  gender STRING,
+  city STRING,
+  preferred_location_id STRING,
+  created_at TIMESTAMP,
+  age INT,
+  full_name_length INT
+)
+STORED AS PARQUET
+LOCATION 's3://peak-fitness-kris-processed/dim_users/';
+
+#9.2.2 — dim_classes
+CREATE EXTERNAL TABLE IF NOT EXISTS peak_fitness.dim_classes (
+  class_id STRING,
+  class_name STRING,
+  class_code STRING,
+  instructor_id STRING,
+  location_id STRING,
+  start_time TIMESTAMP,
+  end_time TIMESTAMP
+)
+STORED AS PARQUET
+LOCATION 's3://peak-fitness-kris-processed/dim_classes/';
+
+#9.3.2 — dim_locations
+CREATE EXTERNAL TABLE IF NOT EXISTS peak_fitness.dim_locations (
+  location_id STRING,
+  location_name STRING,
+  city STRING
+)
+STORED AS PARQUET
+LOCATION 's3://peak-fitness-kris-processed/dim_locations/';
+
+#9.4.2 — Create Athena Table for dim_instructors
+CREATE EXTERNAL TABLE IF NOT EXISTS peak_fitness.dim_instructors (
+  instructor_id STRING,
+  instructor_name STRING
+)
+STORED AS PARQUET
+LOCATION 's3://peak-fitness-kris-processed/dim_instructors/';
+
+#9.5.2 — Create Athena Table for class_attendance
+CREATE EXTERNAL TABLE IF NOT EXISTS peak_fitness.class_attendance (
+  session_id STRING,
+  class_datetime BIGINT,
+  location_id STRING,
+  class_name STRING,
+  instructor_name STRING,
+  attendees ARRAY<STRUCT<user_id:STRING>>,
+  attendance_count INT
+)
+PARTITIONED BY (class_datetime_parsed DATE)
+STORED AS PARQUET
+LOCATION 's3://peak-fitness-kris-processed/class_attendance/';
+
+#register the partitions
+MSCK REPAIR TABLE peak_fitness.class_attendance;
+
+#test
+SELECT * FROM peak_fitness.class_attendance LIMIT 10;
