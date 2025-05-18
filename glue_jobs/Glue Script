@@ -1,0 +1,247 @@
+#################################################################################################################
+#for dim_classes_glue_job
+import sys
+from awsglue.context import GlueContext
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.job import Job
+from pyspark.sql.functions import col, to_timestamp, expr  # ✅ FIX: import expr
+
+args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+job = Job(glueContext)
+job.init(args['JOB_NAME'], args)
+
+# ✅ Correct file path
+input_path = "s3a://peak-fitness-data-raw/peak-fitness-historical/non-pii/mindbody_schedule.csv"
+
+df = spark.read \
+    .option("header", True) \
+    .option("inferSchema", True) \
+    .option("fs.s3a.requester.pays.enabled", "true") \
+    .csv(input_path)
+
+# ✅ Clean schema for dim_classes
+df_clean = df.select(
+    col("session_id").alias("class_id").cast("string"),
+    col("class_name").cast("string"),
+    col("class_code").cast("string"),
+    col("instructor_id").cast("string"),
+    col("loc_id").alias("location_id").cast("string"),
+    to_timestamp(col("datetime")).alias("start_time"),
+    expr("to_timestamp(datetime) + interval duration_mins minutes").alias("end_time")
+)
+
+# ✅ Output location
+output_path = "s3://peak-fitness-kris-processed/dim_classes/"
+
+df_clean.write \
+    .mode("overwrite") \
+    .parquet(output_path)
+
+print("dim_classes Glue job completed successfully.")
+
+job.commit()
+
+#################################################################################################################
+#For dim_users_glue_job
+import sys
+from awsglue.context import GlueContext
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.job import Job
+from pyspark.sql.functions import col
+
+args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+job = Job(glueContext)
+job.init(args['JOB_NAME'], args)
+
+# Set requester pays (redundant + safe)
+hadoop_conf = sc._jsc.hadoopConfiguration()
+hadoop_conf.set("fs.s3.requester.pays.enabled", "true")
+hadoop_conf.set("fs.s3a.requester.pays.enabled", "true")
+
+# Input path (requester-pays PII bucket)
+input_path = "s3a://peak-fitness-data-raw/peak-fitness-historical/pii/mindbody_user_snapshot.csv"
+
+# Read the CSV
+df = spark.read \
+    .option("header", True) \
+    .option("inferSchema", True) \
+    .option("fs.s3a.requester.pays.enabled", "true") \
+    .csv(input_path)
+
+# Select and cast schema for dim_users
+df_clean = df.select(
+    col("user_id").cast("string"),
+    col("first_name").cast("string"),
+    col("last_name").cast("string"),
+    col("email").cast("string"),
+    col("phone_number").cast("string"),
+    col("gender").cast("string"),
+    col("city").cast("string"),
+    col("preferred_location_id").cast("string"),
+    col("date_of_birth").cast("timestamp"),
+    col("created_at").cast("timestamp"),
+    col("age").cast("int"),
+    col("full_name_length").cast("int")
+)
+
+# Output location
+output_path = "s3://peak-fitness-kris-processed/dim_users/"
+
+# Write as Parquet
+df_clean.write \
+    .mode("overwrite") \
+    .parquet(output_path)
+
+print("dim_users job completed successfully.")
+job.commit()
+
+
+#################################################################################################################
+#For dim_locations_glue_job
+import sys
+from awsglue.context import GlueContext
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.job import Job
+from pyspark.sql.functions import col
+
+args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+job = Job(glueContext)
+job.init(args['JOB_NAME'], args)
+
+# Requester Pays
+hadoop_conf = sc._jsc.hadoopConfiguration()
+hadoop_conf.set("fs.s3.requester.pays.enabled", "true")
+hadoop_conf.set("fs.s3a.requester.pays.enabled", "true")
+
+# Source path
+input_path = "s3a://peak-fitness-data-raw/peak-fitness-historical/non-pii/mindbody_schedule.csv"
+
+# Read and clean
+df = spark.read \
+    .option("header", True) \
+    .option("inferSchema", True) \
+    .csv(input_path)
+
+df_clean = df.select(
+    col("loc_id").cast("string").alias("location_id"),
+    col("location_name").cast("string"),
+    col("city").cast("string")
+).dropDuplicates(["location_id"])
+
+# Output path
+output_path = "s3://peak-fitness-kris-processed/dim_locations/"
+
+# Write as Parquet
+df_clean.write \
+    .mode("overwrite") \
+    .parquet(output_path)
+
+job.commit()
+
+#################################################################################################################
+#For dim_instructos_glue_job
+import sys
+from awsglue.context import GlueContext
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.job import Job
+from pyspark.sql.functions import col
+
+args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+job = Job(glueContext)
+job.init(args['JOB_NAME'], args)
+
+# Requester Pays Setup
+hadoop_conf = sc._jsc.hadoopConfiguration()
+hadoop_conf.set("fs.s3.requester.pays.enabled", "true")
+hadoop_conf.set("fs.s3a.requester.pays.enabled", "true")
+
+# Source path
+input_path = "s3a://peak-fitness-data-raw/peak-fitness-historical/non-pii/mindbody_schedule.csv"
+
+# Read and clean
+df = spark.read \
+    .option("header", True) \
+    .option("inferSchema", True) \
+    .csv(input_path)
+
+df_clean = df.select(
+    col("instructor_id").cast("string"),
+    col("instructor_name").cast("string")
+).dropDuplicates(["instructor_id"])
+
+# Output path
+output_path = "s3://peak-fitness-kris-processed/dim_instructors/"
+
+# Write to S3 in Parquet format
+df_clean.write \
+    .mode("overwrite") \
+    .parquet(output_path)
+
+job.commit()
+
+#################################################################################################################
+#For class_attendance_glue_job
+import sys
+from awsglue.context import GlueContext
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.job import Job
+from pyspark.sql.functions import col, from_unixtime, to_date
+
+args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+job = Job(glueContext)
+job.init(args['JOB_NAME'], args)
+
+# Requester Pays Configuration
+hadoop_conf = sc._jsc.hadoopConfiguration()
+hadoop_conf.set("fs.s3.requester.pays.enabled", "true")
+hadoop_conf.set("fs.s3a.requester.pays.enabled", "true")
+
+# Source path
+input_path = "s3a://peak-fitness-data-raw/peak-fitness-historical/pii/class_attendance.json"
+
+# Read JSON
+df = spark.read \
+    .option("multiline", "true") \
+    .json(input_path)
+
+# Convert UNIX millis to date
+df_processed = df.withColumn(
+    "class_datetime_parsed", 
+    to_date(from_unixtime(col("class_datetime") / 1000))
+)
+
+# Filter to January 2023 only
+df_filtered = df_processed.filter(
+    (col("class_datetime_parsed") >= "2023-01-01") &
+    (col("class_datetime_parsed") <= "2023-01-31")
+)
+
+# Write with partitioning by class_datetime_parsed
+output_path = "s3://peak-fitness-kris-processed/class_attendance/"
+
+df_filtered.write \
+    .mode("append") \
+    .partitionBy("class_datetime_parsed") \
+    .parquet(output_path)
+
+job.commit()
