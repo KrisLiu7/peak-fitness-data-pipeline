@@ -1,0 +1,43 @@
+This project is built to be modular and easily extensible for future developers, students, or teams. Below are several recommended ways to extend the platform:
+
+1. Add New Tables (e.g., class_feedback, user_engagement_tags)
+Raw Data: Upload a new CSV or JSON file to your raw S3 bucket (e.g., s3://peak-fitness-data-raw/extra/feedback.json).
+
+Glue Job: Create a new AWS Glue job to transform and convert it into Parquet format.
+
+Athena Table: Register the output location in Athena using an external table.
+
+Query: Add relevant logic to join with existing fact or dimension tables.
+
+2. Add Metrics to Leaderboard Dashboard (Streamlit)
+Open leaderboard_app.py.
+
+Add a new SQL query section using pd.read_sql() from Athena.
+
+Visualize using matplotlib, plotly, or st.dataframe() as needed.
+
+Use st.sidebar.selectbox() to allow switching between modules.
+
+3. Add Real-Time or Near Real-Time Pipelines - Refer to the folder "PostMVP"
+Use AWS Kinesis (mocked or real) to simulate live class check-ins, or Redis when needed.
+
+Parse incoming data via AWS Lambda and append to a stream_class_attendance table.
+
+Use Athena or Redshift Spectrum to query both historical and streaming data.
+
+4. Connect to CRM Tools (e.g., HubSpot, Salesforce)
+Build a Lambda function that queries user attendance segments from Athena.
+
+Use their respective APIs to sync user tags (e.g., churn risk, favorite instructor).
+
+All API keys and credentials should be stored in AWS Secrets Manager.
+
+5. Local Development for Cost Savings
+Use Python + boto3 scripts to manually transform, partition, and upload data.
+
+This avoids Glue job costs during experimentation.
+
+Recommended only for testing, not for production or scaling.
+
+6. Optional ML/Analytics Notebooks (Databricks) - Refer to the folder "PostMVP"
+Run advanced engagement analysis or churn prediction with Spark MLlib.
