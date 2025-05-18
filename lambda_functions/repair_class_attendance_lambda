@@ -1,0 +1,40 @@
+##Lambda Code
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "AthenaExecution",
+			"Effect": "Allow",
+			"Action": [
+				"athena:StartQueryExecution",
+				"athena:GetQueryExecution",
+				"athena:GetQueryResults"
+			],
+			"Resource": "*"
+		},
+		{
+			"Sid": "S3ResultsAccess",
+			"Effect": "Allow",
+			"Action": [
+				"s3:GetObject",
+				"s3:PutObject",
+				"s3:ListBucket"
+			],
+			"Resource": [
+				"arn:aws:s3:::peak-fitness-athena-results",
+				"arn:aws:s3:::peak-fitness-athena-results/*"
+			]
+		},
+		{
+			"Sid": "GlueDataCatalogAccess",
+			"Effect": "Allow",
+			"Action": [
+				"glue:GetDatabase",
+				"glue:GetDatabases",
+				"glue:GetTable",
+				"glue:GetTables"
+			],
+			"Resource": "*"
+		}
+	]
+}
