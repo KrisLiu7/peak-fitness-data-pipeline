@@ -137,6 +137,7 @@ This project proposes a custom, cloud-based data platform that centralizes and t
 - Streamlit dashboard reads from Athena
 
 ## Schema Design
+![Image](https://github.com/user-attachments/assets/52d086aa-8287-445c-891c-8575c870739a)
 
 ### Core Tables
 - `dim_users`
