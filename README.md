@@ -24,3 +24,6 @@ Install Python packages:
 
 ```bash
 pip install -r requirements.txt
+
+## Demo Presentation
+https://www.loom.com/share/ef988abf2d6a408fac2f5c95594e53db?sid=47844fe2-80f7-4d2d-ad6d-f87c01021818
