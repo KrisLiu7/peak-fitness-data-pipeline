@@ -390,18 +390,12 @@ In addition to the Glue + Lambda ETL pipeline, a local ETL alternative using Pyt
 **Configuration Snapshot:**
 Please refer to Github Repository for scripts.
 - Glue setup example:
-```
-glue_client.start_job_run(
-    JobName='peak-fitness-etl',
-    Arguments={
-        '--s3_source': 's3://peak-fitness-data-raw/',
-        '--s3_target': 's3://peak-fitness-data-processed/'
-    }
-)
-```
-- S3 bucket: peak-fitness-data-raw
+- ![Image](https://github.com/user-attachments/assets/760a771b-4ac8-48bc-bf72-263f6acee7a2)
+- S3 bucket: peak-fitness-data-raw:
+- ![Image](https://github.com/user-attachments/assets/11a4aba1-11f2-46ee-87be-40a013522d79)
 - Lambda Function: repair_class_attendance_lambda
-
+- ![Image](https://github.com/user-attachments/assets/e0499f4d-59c2-4aed-a139-0a2eccd5b51a)
+  
 ## 8. Related Artifacts：
 - GitHub repository.
 - ERD Diagram (Section 5).
