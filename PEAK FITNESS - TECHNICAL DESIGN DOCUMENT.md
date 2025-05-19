@@ -1,5 +1,5 @@
 # PEAK FITNESS - TECHNICAL DESIGN DOCUMENT
-
+(https://docs.google.com/document/d/1bV1P7s2352n0kr81_vIF9opW9DPUS8yeaKdnyO8RcW0/edit?tab=t.0#heading=h.iy34636uag8q) For Doc version.
 **Authors:** Kris Liu  
 **Stakeholders:** Peak Fitness Marketing & Retention Team, BeFit Inc.  
 **Approvals:** Minjia  
